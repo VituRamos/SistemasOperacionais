@@ -1,3 +1,5 @@
+/*Faça um programa para disparar uma mensagen de bons estudos a cada 10 segundos utilizando a API posix do linux.*/
+
 #include <unistd.h> 
 #include <stdio.h>
 #include <signal.h>
