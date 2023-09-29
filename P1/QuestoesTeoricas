@@ -1,4 +1,4 @@
-7 ->			 	     | A | B | C | D | 
+7 ->			     | A | B | C | D | 
 		Tempo de CPU | 3 | 2 | 8 | 5 |
 		Chegada      | 0 | 3 | 5 |1 0|
 
@@ -59,8 +59,7 @@ novo programa em execução.
 
 e)Sobre a posix, o que o comando  execv("") faz?
 
--> O comando "execv()" é usado para substituir o programa atual de um processo
-pelo programa especificado em um novo arquivo executável.
+-> O comando "execv()" é usado para substituir o programa atual de um processo pelo programa especificado em um novo arquivo executável.
 
 
 11 ->
@@ -69,16 +68,13 @@ Quais são as interfaces que garantem a abstração para possibilitar comunicaç
 
 a)Hardware <-> software
 
-A interface que permite esse tipo de comunicação é fornecida por meio de 
-drivers de dispositivo.
-São componentes de software que abstraem os detalhes de hardware e fornecem
-uma interface padronizada para que o software interaja com o hardware.
+A interface que permite esse tipo de comunicação é fornecida por meio de drivers de dispositivo.
+São componentes de software que abstraem os detalhes de hardware e fornecemuma interface padronizada para que o software interaja com o hardware.
 
 
 b)Sistemas operacionais <-> bibliotecas
 
-A comunicação entre sistemas operacionais e bibliotecas é intermediadas pela API
-do sistema operacional.
+A comunicação entre sistemas operacionais e bibliotecas é intermediada pela API do sistema operacional.
 
 
 c)Sistemas operacionais <-> aplicações
