@@ -16,6 +16,8 @@
 podem ser carregados simultaneamente na memória e compartilham o tempo de CPU disponivel.
 -> Dessa forma a multiprogramação permite que a CPU alterne de forma muito rapida entre os processos em execução, dando a impressao
 que estão sendo executados simultaneamente.
+-> Isso aumenta a utilização da CPU, pois reduz o tempo em que a CPU fica ociosa, aguardando a conclusão de uma tarefa, e permite que
+ela seja continuamente utilizada para executar vários processos.
 
 
 10 ->
