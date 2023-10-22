@@ -45,7 +45,7 @@ def sjf_preemptivo(processos, tempos_modificados_cpu, tempos_modificados_chegada
         #Se não houver tempo disponivel 
         if not processos_disponiveis:
             tempo_atual += 1
-            linha_tempo.append("_") #Tempo em branco
+            linha_tempo.append("_")
             
         #Se houver tempo disponivel
         else:
