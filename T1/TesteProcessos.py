@@ -7,7 +7,9 @@ def ler_arquivo(nome_arquivo):
     tempos_chegada = []
 
     with open(nome_arquivo, 'r', newline='') as arquivo_csv:
+        
         leitor_csv = csv.reader(arquivo_csv, delimiter=';')
+        
         for linha in leitor_csv:
             
             #A partir do segundo elemento da linha "Processo" transformar em string e strip
@@ -26,7 +28,7 @@ def ler_arquivo(nome_arquivo):
 
 
 #Funcao SJF 
-def sjf_preemptivo(processos, tempos_cpu, tempos_chegada):
+def sjf_preemptivo(processos, tempos_modificados_cpu, tempos_modificados_chegada):
     
     tempo_atual = 0 
     linha_tempo = [] 
@@ -38,7 +40,7 @@ def sjf_preemptivo(processos, tempos_cpu, tempos_chegada):
     while processos_restantes:
         
         #Lista indices de processos com tempo de chegada <= tempo atual
-        processos_disponiveis = [i for i in processos_restantes if tempos_chegada[i] <= tempo_atual]
+        processos_disponiveis = [i for i in processos_restantes if tempos_modificados_chegada[i] <= tempo_atual]
 
         #Se não houver tempo disponivel 
         if not processos_disponiveis:
@@ -49,7 +51,7 @@ def sjf_preemptivo(processos, tempos_cpu, tempos_chegada):
         else:
             
             #Insere processo na fila
-            processos_na_fila = [(processos[i], tempos_cpu[i]) for i in processos_disponiveis]
+            processos_na_fila = [(processos[i], tempos_modificados_cpu[i]) for i in processos_disponiveis]
             
             #Ordena o processo (Menor tempo de CPU)
             processos_na_fila.sort(key=lambda x: x[1])
@@ -62,10 +64,10 @@ def sjf_preemptivo(processos, tempos_cpu, tempos_chegada):
             linha_tempo.append(processo_atual)
             
             #Decrementar tempos do processo atual
-            tempos_cpu[(processos.index(processo_atual))] -=1
+            tempos_modificados_cpu[(processos.index(processo_atual))] -=1
 
             #Remove o processo da lista de procesos restantes caso tempo de cpu zere
-            if tempos_cpu[(processos.index(processo_atual))] == 0:
+            if tempos_modificados_cpu[(processos.index(processo_atual))] == 0:
                 processos_restantes.remove(processos.index(processo_atual))
 
     return linha_tempo
@@ -107,13 +109,17 @@ nome_arquivo = "TesteP4.csv"
 #Leitura dos dados do arquivo
 processos, tempos_cpu, tempos_chegada = ler_arquivo(nome_arquivo)
 
+#Tempos de leitura que serao modificados
+tempos_modificados_cpu = [(tempos) for tempos in tempos_cpu]
+tempos_modificados_chegada = [(tempos) for tempos in tempos_chegada]
+
 #Executar SJF preemptivo
-linha_tempo_sjf = sjf_preemptivo(processos, tempos_cpu, tempos_chegada)
+linha_tempo_sjf = sjf_preemptivo(processos, tempos_modificados_cpu, tempos_modificados_chegada)
 
 #Calcular tempos medios
 quantidade_processos = len(processos)
 tempos_espera = [linha_tempo_sjf.index(processo) for processo in processos]
-tempos_resposta = [tempos_espera[i] - tempos_chegada[i] for i in range(quantidade_processos)]
+tempos_resposta = [tempos_espera[i] - tempos_modificados_chegada[i] for i in range(quantidade_processos)]
 tempo_medio_espera, tempo_medio_resposta = calcular_tempos_medios(tempos_espera, tempos_resposta, quantidade_processos)
 
 linha_tempo_formatada = formatar_linha_tempo(linha_tempo_sjf)
