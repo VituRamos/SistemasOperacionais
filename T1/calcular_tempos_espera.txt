@@ -1,21 +1,24 @@
-def calcular_tempos_espera(linha_tempo,tempos_chegada):
-    
+#Formatar linha do tempo 
+def linha_tempo_calc(linha_tempo):
     tempo = 0
     processo_atual = None
-    processo_passado = []
-    tempo_espera = []
+    linha_tempo_mod = []
 
     for processo in linha_tempo:
         
         if processo == processo_atual:
             tempo += 1
             
-            
-        #Se o processo mudar
         else:
             
-            processo_passado +=[(processo,tempo)]
+            if processo_atual:
+                
+                linha_tempo_mod += [(processo_atual,tempo)]
+            
             processo_atual = processo
             tempo += 1
-    
-    return tempo_espera
+
+    if processo_atual:
+        linha_tempo_mod += [(processo_atual,tempo)]
+
+    return linha_tempo_mod
