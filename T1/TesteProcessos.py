@@ -69,33 +69,25 @@ def sjf_preemptivo(processos, tempos_modificados_cpu, tempos_modificados_chegada
         #Lista indices de processos com tempo de chegada <= tempo atual
         processos_disponiveis = [i for i in processos_restantes if tempos_modificados_chegada[i] <= tempo_atual]
 
-        #Se não houver tempo disponivel 
-        if not processos_disponiveis:
-            tempo_atual += 1
-            linha_tempo.append("_")
+        #Insere processo na fila
+        processos_na_fila = [(processos[i], tempos_modificados_cpu[i]) for i in processos_disponiveis]
             
-        #Se houver tempo disponivel
-        else:
+        #Ordena os processos (Menor tempo de CPU)
+        processos_na_fila.sort(key=lambda x: x[1])
             
-            #Insere processo na fila
-            processos_na_fila = [(processos[i], tempos_modificados_cpu[i]) for i in processos_disponiveis]
-            
-            #Ordena o processo (Menor tempo de CPU)
-            processos_na_fila.sort(key=lambda x: x[1])
-            
-            #Recebe info do processo
-            processo_atual, tempo_restante = processos_na_fila[0]
+        #Recebe info do processo
+        processo_atual, tempo_restante = processos_na_fila[0]
 
-            #Processo é adicionado a linha do tempo com base em seu tempo de cpu
-            tempo_atual += 1
-            linha_tempo.append(processo_atual)
+        #Processo é adicionado a linha do tempo com base em seu tempo de cpu
+        tempo_atual += 1
+        linha_tempo.append(processo_atual)
             
-            #Decrementar tempos do processo atual
-            tempos_modificados_cpu[(processos.index(processo_atual))] -=1
+        #Decrementar tempos do processo atual
+        tempos_modificados_cpu[(processos.index(processo_atual))] -=1
 
-            #Remove o processo da lista de procesos restantes caso tempo de cpu zere
-            if tempos_modificados_cpu[(processos.index(processo_atual))] == 0:
-                processos_restantes.remove(processos.index(processo_atual))
+        #Remove o processo da lista de procesos restantes caso tempo de cpu zere
+        if tempos_modificados_cpu[(processos.index(processo_atual))] == 0:
+            processos_restantes.remove(processos.index(processo_atual))
 
     return linha_tempo
 
@@ -109,15 +101,14 @@ def formatar_linha_tempo(linha_tempo):
     #Para cada processo em linha do tempo
     for processo in linha_tempo:
         
-        #Se processo ainda estiver na fila tempo++ para inserir posteriormente na linha formatada
+        #Se o processo se manter o mesmo
         if processo == processo_atual:
             tempo += 1
-            
             
         #Se o processo mudar
         else:
             
-            #Se existir processo
+            #Se existir processo_atual
             if processo_atual:
                 
                 #Adiciona nova parte da linha em linha formatada
@@ -141,7 +132,7 @@ def calcular_tempos_finais(linha_tempo):
     processo_atual = None
     linha_tempo_mod = []
 
-    #Gerar linha do tempo (semelhante ao "Formatar linha tempo")
+    #Gerar linha do tempo_final (semelhante ao "Formatar linha tempo")
     for processo in linha_tempo:
         
         if processo == processo_atual:
@@ -161,17 +152,26 @@ def calcular_tempos_finais(linha_tempo):
 
 
     #Ordenar tempos em valores unicos para tupla = [(Tempo P1),(Tempo P2)...]
-    max_values = {}
+    processo_nome = {}
 
+    #Para cada elemento em linha_tempo
     for elemento in linha_tempo_mod:
         string, valor = elemento
         
-        if string in max_values:
-            max_values[string] = max(max_values[string], valor)
+        #Se string ja estiver em processo_nome
+        if string in processo_nome:
+            
+            #Recebe maior valor em que a string se repete
+            processo_nome[string] = max(processo_nome[string], valor)
+            
+        #Se string nao estiver em processo_nome
         else:
-            max_values[string] = valor
+            
+            #Processo_nome recebe valor
+            processo_nome[string] = valor
 
-    tempos = [(max_values[string]) for string in max_values]
+    #Recebe tempo de cada processo
+    tempos = [(processo_nome[string]) for string in processo_nome]
 
     return tempos
 
@@ -183,7 +183,7 @@ def calcular_tempos_medios(tempos_espera, tempos_resposta, quantidade_processos)
 
 
 #Nome do arquivo
-nome_arquivo = "TesteP4.xlsx"  
+nome_arquivo = "Input.xlsx"  
 
 #Leitura dos dados do arquivo
 processos, tempos_cpu, tempos_chegada = ler_arquivo_xlsx(nome_arquivo)
@@ -198,7 +198,7 @@ linha_tempo_sjf = sjf_preemptivo(processos, tempos_modificados_cpu, tempos_modif
 #Calcular tempos medios
 quantidade_processos = len(processos)
 tempos_finais = calcular_tempos_finais(linha_tempo_sjf)
-tempos_espera = [tempos_finais[i] - (tempos_chegada[i]+tempos_cpu[i]) for i in range(quantidade_processos)]
+tempos_espera = [tempos_finais[i] - (tempos_chegada[i] + tempos_cpu[i]) for i in range(quantidade_processos)]
 tempos_resposta = [tempos_finais[i] - tempos_chegada[i] for i in range(quantidade_processos)]
 tempo_medio_espera, tempo_medio_resposta = calcular_tempos_medios(tempos_espera, tempos_resposta, quantidade_processos)
 
