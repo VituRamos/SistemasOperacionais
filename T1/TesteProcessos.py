@@ -33,7 +33,7 @@ def sjf_preemptivo(processos, tempos_modificados_cpu, tempos_modificados_chegada
     tempo_atual = 0 
     linha_tempo = [] 
     
-    #Lista indices dos processos 
+    #Lista indices dos processos restantes
     processos_restantes = list(range(len(processos))) 
 
     #Enquanto houverem processos restantes
@@ -82,17 +82,28 @@ def formatar_linha_tempo(linha_tempo):
     #Para cada processo em linha do tempo
     for processo in linha_tempo:
         
+        #Se processo ainda estiver na fila tempo++ para inserir posteriormente na linha formatada
         if processo == processo_atual:
             tempo += 1
             
+            
+        #Se o processo mudar
         else:
+            
+            #Se existir processo
             if processo_atual:
+                
+                #Adiciona nova parte da linha em linha formatada
                 linha_formatada += f"------{processo_atual}-----−|{tempo}|"
+            
+            #Atualizacao do processo atual e tempo++ para inserir posteriormente na linha formatada
             processo_atual = processo
             tempo += 1
 
+    #Se apos o loop ainda restar um processo
     if processo_atual:
         linha_formatada += f"------{processo_atual}-----−|{tempo}|"
+        
 
     return linha_formatada
 
@@ -103,7 +114,7 @@ def calcular_tempos_medios(tempos_espera, tempos_resposta, quantidade_processos)
     return tempo_medio_espera, tempo_medio_resposta
 
 
-#Nome do arquivo com os dados
+#Nome do arquivo
 nome_arquivo = "TesteP4.csv"  
 
 #Leitura dos dados do arquivo
@@ -124,15 +135,19 @@ tempo_medio_espera, tempo_medio_resposta = calcular_tempos_medios(tempos_espera,
 
 linha_tempo_formatada = formatar_linha_tempo(linha_tempo_sjf)
 
-# Exibir resultados
+#Exibir resultados
 print("Processos na Fila do SJF Preemptivo:")
-print("   " + "    ".join(processos))
+print("    ".join(processos))
+
 print("\nTempo de CPU requerida pelos processos:")
-print("   " + "    ".join(map(str, tempos_cpu)))
+print("    ".join(map(str, tempos_cpu)))
+
 print("\nTempo de Chegada dos processos:")
-print("   " + "    ".join(map(str, tempos_chegada)))
+print("    ".join(map(str, tempos_chegada)))
+
 print("\nLinha do Tempo:")
 print((linha_tempo_formatada))
+
 print("\nTempos Médios:")
 print(f"Tempo Médio de Espera: {tempo_medio_espera}")
 print(f"Tempo Médio de Resposta: {tempo_medio_resposta}")
