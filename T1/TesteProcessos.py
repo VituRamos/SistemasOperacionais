@@ -1,7 +1,8 @@
+import openpyxl
 import csv
 
 #Ler arquivo .csv
-def ler_arquivo(nome_arquivo):
+def ler_arquivo_csv(nome_arquivo):
     processos = []
     tempos_cpu = []
     tempos_chegada = []
@@ -23,6 +24,32 @@ def ler_arquivo(nome_arquivo):
             #A partir do segundo elemento da linha "Chegada" transformar em int e strip
             elif linha[0] == "Chegada":
                 tempos_chegada = [int(tempo.strip()) for tempo in linha[1:]]  
+
+    return processos, tempos_cpu, tempos_chegada
+
+
+#ler arquivo .xlsx
+def ler_arquivo_xlsx(nome_arquivo):
+    processos = []
+    tempos_cpu = []
+    tempos_chegada = []
+    
+    #Abrir arquivo .xlsx
+    workbook = openpyxl.load_workbook(nome_arquivo)
+    
+    #Abrir planilha ativa
+    worksheet = workbook.active
+
+    for linha in worksheet.iter_rows(values_only=True):
+        
+        if linha[0] == "Processo":
+            processos = [str(elemento) for elemento in linha[1:]]
+        
+        elif linha[0] == "Tempo":
+            tempos_cpu = [int(tempo) for tempo in linha[1:]]
+        
+        elif linha[0] == "Chegada":
+            tempos_chegada = [int(tempo) for tempo in linha[1:]]
 
     return processos, tempos_cpu, tempos_chegada
 
@@ -107,6 +134,7 @@ def formatar_linha_tempo(linha_tempo):
 
     return linha_formatada
 
+
 #Calcular tempo final para cada processo
 def calcular_tempos_finais(linha_tempo):
     tempo = 0
@@ -155,10 +183,10 @@ def calcular_tempos_medios(tempos_espera, tempos_resposta, quantidade_processos)
 
 
 #Nome do arquivo
-nome_arquivo = "TesteABCD.csv"  
+nome_arquivo = "TesteP4.xlsx"  
 
 #Leitura dos dados do arquivo
-processos, tempos_cpu, tempos_chegada = ler_arquivo(nome_arquivo)
+processos, tempos_cpu, tempos_chegada = ler_arquivo_xlsx(nome_arquivo)
 
 #Tempos de leitura que serao modificados
 tempos_modificados_cpu = [(tempos) for tempos in tempos_cpu]
