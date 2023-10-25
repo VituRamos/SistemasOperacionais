@@ -107,6 +107,46 @@ def formatar_linha_tempo(linha_tempo):
 
     return linha_formatada
 
+#Calcular tempo final para cada processo
+def calcular_tempos_finais(linha_tempo):
+    tempo = 0
+    processo_atual = None
+    linha_tempo_mod = []
+
+    #Gerar linha do tempo (semelhante ao "Formatar linha tempo")
+    for processo in linha_tempo:
+        
+        if processo == processo_atual:
+            tempo += 1
+            
+        else:
+            
+            if processo_atual:
+                
+                linha_tempo_mod += [(processo_atual,tempo)]
+            
+            processo_atual = processo
+            tempo += 1
+
+    if processo_atual:
+        linha_tempo_mod += [(processo_atual,tempo)]
+
+
+    #Ordenar tempos em valores unicos para tupla = [(Tempo P1),(Tempo P2)...]
+    max_values = {}
+
+    for elemento in linha_tempo_mod:
+        string, valor = elemento
+        
+        if string in max_values:
+            max_values[string] = max(max_values[string], valor)
+        else:
+            max_values[string] = valor
+
+    tempos = [(max_values[string]) for string in max_values]
+
+    return tempos
+
 
 def calcular_tempos_medios(tempos_espera, tempos_resposta, quantidade_processos):
     tempo_medio_espera = sum(tempos_espera) / quantidade_processos
@@ -115,7 +155,7 @@ def calcular_tempos_medios(tempos_espera, tempos_resposta, quantidade_processos)
 
 
 #Nome do arquivo
-nome_arquivo = "TesteP4.csv"  
+nome_arquivo = "TesteABCD.csv"  
 
 #Leitura dos dados do arquivo
 processos, tempos_cpu, tempos_chegada = ler_arquivo(nome_arquivo)
@@ -129,8 +169,9 @@ linha_tempo_sjf = sjf_preemptivo(processos, tempos_modificados_cpu, tempos_modif
 
 #Calcular tempos medios
 quantidade_processos = len(processos)
-tempos_espera = [linha_tempo_sjf.index(processo) for processo in processos]
-tempos_resposta = [tempos_espera[i] - tempos_modificados_chegada[i] for i in range(quantidade_processos)]
+tempos_finais = calcular_tempos_finais(linha_tempo_sjf)
+tempos_espera = [tempos_finais[i] - (tempos_chegada[i]+tempos_cpu[i]) for i in range(quantidade_processos)]
+tempos_resposta = [tempos_finais[i] - tempos_chegada[i] for i in range(quantidade_processos)]
 tempo_medio_espera, tempo_medio_resposta = calcular_tempos_medios(tempos_espera, tempos_resposta, quantidade_processos)
 
 linha_tempo_formatada = formatar_linha_tempo(linha_tempo_sjf)
