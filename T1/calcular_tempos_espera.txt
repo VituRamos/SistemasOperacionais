@@ -22,3 +22,7 @@ def linha_tempo_calc(linha_tempo):
         linha_tempo_mod += [(processo_atual,tempo)]
 
     return linha_tempo_mod
+
+
+
+linha_tempo_mod = linha_tempo_calc(linha_tempo_sjf)
