@@ -1,0 +1,516 @@
+1) Um mecanismo disponibilizado por sistemas UNIX para troca de mensagens entre processos é o
+PIPE. Pipes são mecanismos de comunicação indireta onde mensagens são trocadas através de
+mailboxes. Cada mailbox possui um identificador único, permitindo que processos identifiquem o
+canal de comunicação entre eles.
+
+O fluxo de mensagens em um Pipe é:
+             unidirecional: sobre um mesmo pipe, apenas um processo envia mensagens e um processo recebe mensagens;           
+
+             FIFO: as mensagens são entregues na ordem de envio;
+
+             Não-estruturado: não há estrutura pré-definida para o formato da mensagem. No UNIX, pipes são inicializados através da SystemCall pipe, que possui a seguinte sintaxe:
+
+             int pipe(int pipefd[2]): pipe inicializa um novo pipe no sistema e retorna, no array pipefd, os descritores identificando cada uma das pontas do pipe. A
+primeira posição do array, i.e. pipefd[0], recebe o descritor que pode ser aberto apenas para leitura, enquanto a segunda posição do array, i.e.
+pipefd[1], recebe o descritor que pode ser aberto apenas para escrita. A função retorna zero no caso de sucesso, ou -1 se ocorrer erro.
+As primitivas send/receive para uso de um pipe no UNIX são implementadas por SystemCalls read/write, conforme segue:
+            ssize_t read(int fd, void *buf, size_t count): “puxa” dados do pipe identificado pelo descritor fd. Os dados recebidos são os apontados pelo ponteiro buf,
+sendo count a quantidade máxima de bytes a serem recebidos. A função retorna o número de bytes recebidos. ssize_t write(int fd, const void *buf, size_t count): “empurra” dados no pipe identificado pelo descritor fd. Os dados transmitidos são os apontados pelo ponteiro buf, sendo count a quantidade de bytes a serem transmitidos. A função retorna o número de bytes transmitidos. Abaixo há um exemplo de programa criando um pipe e compartilhando os descritores entre dois processos (criados via fork()).
+
+
+
+         Exercício 1: Faça um programa utilizando o posix do linux que faça dois processos filhos enviarem mensagem para um mesmo pai por meio de PIPES.
+
+         Exercício 2: Shared Memory, Complete o código a seguir para que os processos pai e filho possam compartilhar um segmento de memória. O filho escreve no segmento e o pai imprime na tela o conteúdo da mensagem.
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+
+#define SHM_SIZE 1024
+
+int main(int argc, char *argv[])
+{
+      key_t key;
+      int shmid;
+      char *segmento;
+      int modo,filho;
+      /* Criar a chave: */
+      if (key == -1)
+      {
+           perror("ftok");
+           exit(1);
+       }
+      /*Criar o segmento */
+      if (shmid == -1) {
+          perror("shmget");
+          exit(1);
+      }
+      /*Vincula o segmento de memória á variável segmento*/
+      segmento = shmat(shmid, (void *)0, 0);
+      if (segmento == (char *)(-1)) {
+         perror("shmat");
+         exit(1);
+      }    
+    //Código do filho
+   //Código do pai
+    }
+    /* Desvincular do segmento */
+    if (shmdt(segmento) == -1) {
+          perror("shmdt");
+          exit(1);
+    }
+    return 0;
+
+
+}
+
+
+
+
+2) Construa um “pipeline”. Crie um programa que conecte 4 processos através de 3 pipes. Utilize fork() para criar vários processos. Mande uma mensagem do quarto processo e faça a mensagem viajar pelos pipes  até chegar no primeiro processo, e exiba a mensagem.
+
+
+3) Explique o que são processos. Qual a diferença entre processos e threads?
+Um processo é uma instância em execução de um programa, enquanto uma thread é uma unidade básica de execução dentro de um processo.
+Processos geralmente são mais isolados entre si, enquanto threads compartilham o mesmo espaço de endereçamento e recursos dentro de um processo.
+O custo de criação e gerenciamento de processos é geralmente mais alto, enquanto threads têm um custo menor.
+A comunicação entre processos é geralmente mais complexa, envolvendo mecanismos de IPC, enquanto a comunicação entre threads pode ser mais direta, mas requer cuidados com a concorrência.
+
+
+
+Para os exercícios 4 e 5 considere o seguinte código:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <sys/wait.h>
+ 
+#define SHM_SIZE 1024
+
+
+const int REP = 5;
+char dado;
+key_t key;
+int shmid,flagsid;
+char *data;
+int  *flags;
+
+int producer(int n)
+{
+    printf("Producer was born!\n");
+ 
+    for(int i = 0; i < REP; i++) {        
+    
+    flags[0] = 1;
+           
+    while(flags[1] && (flags[3] == 1));
+    
+    data[i] = (char) i + 0x61;   
+    printf("Stored... %c \n", data[i]);
+    
+    flags[3] = 1;
+    
+    flags[0] = 0;
+    
+    }
+       
+    return n;
+}
+ 
+int consumer(int n)
+{
+    printf("Consumer was born!\n");
+ 
+    
+    for(int i = 0; i < REP; i++) {
+    
+     flags[1] = 1;
+    
+    while(flags[0] && (flags[3] == 0));
+    
+     dado = data[i];
+    
+    data[i] = ' '; 
+    
+    printf("Consumed... %c \n", dado);
+    
+    flags[3] = 0;
+    
+    flags[1] = 0;
+    
+    
+        
+    }
+ 
+    return n;
+}
+ 
+int main()
+{
+    printf("The Producer x Consumer Problem\n");
+    int status;
+     
+    key = ftok("/home", 'A');                      //  Segmento   
+    shmid = shmget(key, 1024, 0644 | IPC_CREAT);   //
+    data = (malloc(5*sizeof(char)));               //     1        
+    data = shmat(shmid, (void *)0, 0);             //
+    
+    //Peterson
+    key = ftok("/home/downloads", 'B');            //  Segmento   
+    flagsid = shmget(key, 1024, 0644 | IPC_CREAT); //    
+    flags = (malloc(3*sizeof(int)));               //     2
+    flags = shmat(flagsid, (void *)0, 0);          //  
+    
+    flags[0] = 1;
+    flags[1] = 0;
+    flags[3] = 0;
+      
+    int pid = fork();
+      
+       
+      
+    if(pid == 0){
+        producer(5);       
+    }else{
+            
+            consumer(5);
+            
+            shmdt(data);                              //segmento 3 
+            shmctl(shmid, IPC_RMID, NULL);            //
+           
+            shmdt(flags);                             //segmento 4
+            shmctl(flagsid, IPC_RMID, NULL);        //
+           
+           
+                      
+    }   
+    
+        
+    return 0;
+    
+}    
+
+
+4) A partir do código produtor/consumidor, modifique o exercício para que o mesmo corresponda ao algoritmo produtor/consumidor do slide 3 da aula de programação concorrente.
+
+5) A partir do exercício 2, retire a solução de Peterson, e responda se é possível sincronizar o programa com apenas 1 (um) único comando. Se sim, aplique esse comando para sincronizar.
+    
+6) Sincronize o código a seguir, de maneira que o processo pai imprima apenas os números impares e o processo filho os números pares. Para isso utilize Semáforos. Utilize memória compartilhada para comunicação entre os processos.
+
+
+if (fork() != 0) { /* I am the parent */
+    int i;
+    for(i = 0; i < 10; i = i+2){
+        printf("Processo pai %d \n", i);
+        sleep(1);
+    
+    }
+}
+else { /*Child code */
+    int i;
+        for(i = 1; i < 10; i = i+2){
+            printf("Processo filho %d \n", i);
+        }
+    }
+    exit(0);
+
+
+
+
+
+7) programa abaixo manipula uma matriz de tamanho MxN (veja os defines para o tamanho da matriz). A função SumValues soma todos os valores em uma linha da matriz. A linha a ser somada é
+identificada pela variável i. Modifique o programa principal (main) nos locais indicados para:
+
+
+           1. Criar N threads, uma para somar os valores de cada linha.
+
+           2. Receber o resultado do somatório de cada linha e gerar o somatório total da matriz.
+
+           3. Analise o programa: há problemas de sincronização que precisam ser resolvidos? Se sim, resolva-os.
+
+
+#include <stdio.h>
+#include <pthread.h>
+#include <semaphore.h>
+
+
+/*
+Threads independentes, não geram inconsistência no resultado final,
+no entanto os cout's parecem fora de ordem
+*/
+
+
+/* number of matrix columns and rows */
+#define M 5
+#define N 10
+ 
+sem_t sem;
+int matrix[N][M];
+pthread_t threads[N];
+int sum_total;
+
+ 
+/* thread function; it sums the values of the matrix in the row */
+void* SumValues(void* i)
+{
+    int n = (long) i; /* number of row */
+    int total = 0; /* the total of the values in the row */
+    int j;
+    for (j = 0; j < M; j++)          /* sum values in the "n" row */
+        total += matrix[n][j];
+   
+    printf("The total in row %d is %d  \n", n, total);
+    
+ 
+
+    /* terminate a thread and return a total in the row */
+    pthread_exit((void **)total);        
+ 
+int main(int argc, char *argv[])
+{
+    sum_total = 0;
+    int i=1, j;
+    int total = 0; /* the total of the values in the matrix */
+
+ 
+     /* initialize the matrix */
+    for (i = 0; i < N; i++)
+        for (j = 0; j < M; j++)
+            matrix[i][j] = i * M + j;
+ 
+    /* create threads */
+    /* COLOQUE SEU CÓDIGO PARA CRIAR AS THREADS AQUI! */
+
+      
+    /* wait for terminate a threads */
+    /* COLOQUE SEU CÓDIGO PARA PEGAR O SOMATÓRIO DE LINHAS E TOTALIZAR A SOMA DA MATRIZ AQUI! */
+ 
+     printf("The total values in the matrix is %d \n", sum_total);
+ 
+
+    return 0;
+}
+
+Para o exercício 7 considerar as seguintes implementações:
+
+    thread.h
+
+#ifndef __thread_h
+#define __thread_h
+ 
+#include <pthread.h>
+#include <signal.h>
+ 
+class Thread
+{
+public:
+    Thread(int ( * const entry)(int), int arg) {
+    if(pthread_create(&thread, 0, (void*(*)(void*))entry, (void *)arg))
+        thread = 0;
+    }
+    ~Thread() {}
+ 
+    int join(int * status) { return pthread_join(thread, (void **)status); }
+ 
+ 
+private:
+    pthread_t thread;
+};
+
+
+
+semaphore.h
+
+#ifndef __semaphore_h
+#define __semaphore_h
+ 
+#include <semaphore.h>
+ 
+class Semaphore
+{
+public:                              
+    Semaphore(int i = 1) { sem_init(&sem, 0, i); } //arg 0: endereço do semaforo arg1: com que vai compartilhar arg3:valor inicial(se não especificar é 1)
+    ~Semaphore() { sem_destroy(&sem); }
+ 
+    void p() { sem_wait(&sem); }
+    void v() { sem_post(&sem); }
+ 
+    operator int()
+    {
+        int ret;
+        sem_getvalue(&sem, &ret);
+        return ret;
+    }
+ 
+private:
+    sem_t sem;
+};
+ 
+#endif
+
+
+
+
+
+
+
+8) Analise o seguinte trecho de código, e responda:
+
+
+
+#include <unistd.h>
+#include <fcntl.h>
+#include <stdio.h>
+char *message = "This is a message!!!" ;
+
+ main()
+{
+    
+      int var = 0;
+    
+
+       if (fork() != 0) { /* I am the parent */
+              var += 5;
+        }
+
+       else { /*Child code */
+              var +=10;
+       }
+
+      printf("%d",var);
+}
+
+a) Qual o valor impresso no console? Justifique o resultado.
+O valor impresso é 510. O resultado é impresso dessa maneira visto que não existe um meio de comunicação declarado entre os processos, dessa forma, a maneira que
+os processos executam definem o valor para sua variavel e por possuirem o mesmo descritor para a saida, suas saidas sao misturadas no console.
+
+b) Como vocẽ resolveria o problema para imprimir o resultado correto? Por que você escolheu essa solução?
+A resolução pode vir por meio da utilização de pipes, gerando uma comunicação entre processos direta, ou da criação de uma memoria compartilhada para que a mesma variavel
+seja compartilhada entre os processos.
+
+d) Quais seriam as abordagens possíveis na sua opinião? (cite ao menos as vistas em aula).
+Criação de pipes ou memoria compartilhada.
+
+c) Implemente a abordagem escolhida. 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/types.h>
+#include <sys/ipc.h>
+#include <sys/shm.h>
+#include <fcntl.h>
+#include <unistd.h>
+#include <sys/wait.h>
+
+int main()
+{
+    int PIPE[2];      // Criação do pipe
+    int PIPE2[2];     // Criação do pipe
+
+    if (pipe(PIPE) == -1 || pipe(PIPE2) == -1)
+    {
+        perror("pipe");
+        exit(EXIT_FAILURE);
+    }
+
+    int var = 0;
+
+    // Pai
+    if (fork() != 0){
+        var += 5;
+        write(PIPE[1], &var, sizeof(var)); // Escreva no primeiro pipe
+    
+    //Filho
+    }else{
+
+        read(PIPE[0], &var, sizeof(var)); // Leia do primeiro pipe
+        var += 10;
+        printf("Valor final da variavel: %d \n", var);
+    }
+
+
+    return 0;
+}
+
+
+
+9) O que é condição de corrida? Como Evitar esse "efeito"?
+Uma condição de corrida ocorre quando o comportamento do programa depende da ordem em que seus suas operações são executadas. Situação decorrente em casos em que
+duas ou mais threads ou processos acessam recursos compartilhados de forma simultanea.
+Esse efeito pode ser evitado com o uso de métodos de sincronização, como mutexes ou semaforos por exemplo.
+
+
+10) Sintetize as etapas principais para criação de uma memória compartilhada nos sistemas UNIX.
+Criação de uma chave de identificação com a função ftok, criação da memoria compartilhada com a função shmget que retorna um identificador da memoria compartilhada(shmid)
+e a anexação do processo a memoria compartilhada com a função shmat.
+
+
+11) Sobre os métodos de sincronização, explique:
+
+       a) O que são mutexes? Como são implementados?
+        Mutexes são mecanismos de sincronização utilizados para que apenas uma thread por vez tenha acesso a uma regiao critica do código, evitando condições de corrida.
+        Um mutex possui dois estados, lock(trancado) e unlock(destrancado). Uma thread que deseja acessar a regiao critica primeiro deve utilizar o lock, e uma vez
+        que concluir suas operações, ela deve dar unlock para que outras threads possam ter acesso a regiao.
+
+       b) O que são semáforos? Como são implementados?
+        Semaforos são mecanismos de sincronização, podendo serem utilizados para o controle de acesso a um numero fixo de recursos, diferentemente dos mutexes que são
+        utilizados mais comumente para controle de uma unica região critica.
+        A ideia principal dos semaforos é um contador de inteiro, podendo ser decrementado para indicar que um recurso foi adquirido e incrementado para indicar que
+        um recurso foi produzido.
+
+       c) Não sua opinião Mutex e semáforo binário são a mesma coisa?
+        Um mutex é um semáforo binario, possuindo apenas dois estados, zero para não disponivel e um para disponivel.
+
+       d) Além desses dois métodos, qual seria uma outra alternativa para sincronização de processos?
+        Outra alternativa seria o uso de variaveis de condição.
+
+
+12) Em sistemas operacionais o que são PIPEs. Cite as características principais de um PIPE, e explique o seu funcionamento.
+PIPEs são um mecanismo de comunicação interprocessual que permite a comunicação entre dois processos. Eles fornecem uma maneira de conectar a saída de um processo
+diretamente com a entrada de outro, criando um canal que comunicação.
+Pipes são geralmente unidirecionais, o que significa que os dados fluem em uma única direção. Existem pipes de leitura (read) e pipes de gravação (write).
+Após a criação do PIPE cada extremidade pode ser fechada de forma independente. Dessa forma um processo pode escrever os dados mais rapidamente do que o processo de leitura
+pode le-los.
+
+13) Explique o que são deadlocks. Como você trataria um deadlock? A sua solução "compensa" computacionalmente falando?
+São situações em que um conjunto de processos ou threads estão bloqueados indefinidamente, cada um esperando que o outro libere um recurso.
+A prevenção de deadlocks seria a "solução" que mais compensaria computacionalmente falando comparada aos outros tratamentos possiveis.
+
+14) Quais as principais vantagens de threads de usuário em relação a threads de núcleo? E as principais desvantagens?
+
+Vantagens:
+As threads de usuário são criadas e gerenciadas pela aplicação, sem intervenção do sistema operacional. Isso torna sua implementação mais simples e flexível.
+Como as threads de usuário são gerenciadas pelo programa, há menos overhead na criação, troca e sincronização de threads em comparação com as threads de núcleo,
+que envolvem chamadas ao sistema operacional.
+Threads de usuário podem ser implementadas de maneira independente do sistema operacional, o que contribui para a portabilidade do código entre diferentes plataformas.
+
+Desvantagens:
+Se uma thread de usuário bloqueia, todo o processo é bloqueado, pois as threads são gerenciadas pela aplicação.Isso pode impactar o desempenho e a responsividade
+da aplicação.
+O escalonamento das threads de usuário depende da lógica da aplicação, o que pode não ser tão eficiente quanto o escalonamento feito pelo sistema operacional nas
+threads de núcleo.
+
+15) Qual as principais vantagens de threads de núcleo em relação a threas de usuário? E as principais desvantagens?
+
+Vantagens:
+As threads de núcleo são gerenciadas pelo sistema operacional, o que pode resultar em um escalonamento mais eficiente, levando em consideração características específicas do sistema e suas políticas de escalonamento.
+O sistema operacional pode fornecer mecanismos de sincronização mais robustos, como semáforos e mutexes de kernel, garantindo uma sincronização confiável entre as threads.
+Bloqueio não Afeta Todo o Processo:
+Se uma thread de núcleo bloqueia, outras threads no mesmo processo ainda podem ser executadas. Isso ajuda a manter uma melhor responsividade.
+
+Desvantagens:
+Overhead Maior:
+
+O gerenciamento de threads de núcleo pelo sistema operacional pode envolver um maior overhead em comparação com threads de usuário, devido às chamadas ao sistema e ao
+contexto de troca de contexto.
+A implementação de threads de núcleo é muitas vezes mais complexa e dependente do sistema operacional. Portanto, há menos portabilidade entre diferentes sistemas.
