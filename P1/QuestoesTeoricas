@@ -12,12 +12,9 @@
 9 ->
 
 -> A multiprogramação é um abordagem que permite que a CPU seja utilizada de forma mais eficiente.
--> Normalmente, em um sistema, os programas são executados um de cada vez na CPU, porém, com a multiprogramação, vários programas
-podem ser carregados simultaneamente na memória e compartilham o tempo de CPU disponivel.
--> Dessa forma a multiprogramação permite que a CPU alterne de forma muito rapida entre os processos em execução, dando a impressao
-que estão sendo executados simultaneamente.
--> Isso aumenta a utilização da CPU, pois reduz o tempo em que a CPU fica ociosa, aguardando a conclusão de uma tarefa, e permite que
-ela seja continuamente utilizada para executar vários processos.
+-> Normalmente, em um sistema, os programas são executados um de cada vez na CPU, porém, com a multiprogramação, vários programas podem ser carregados simultaneamente na memória e compartilham o tempo de CPU disponivel.
+-> Dessa forma a multiprogramação permite que a CPU alterne de forma muito rapida entre os processos em execução, dando a impressao que estão sendo executados simultaneamente.
+-> Isso aumenta a utilização da CPU, pois reduz o tempo em que a CPU fica ociosa, aguardando a conclusão de uma tarefa, e permite que ela seja continuamente utilizada para executar vários processos.
 
 
 10 ->
@@ -25,38 +22,26 @@ ela seja continuamente utilizada para executar vários processos.
 a)O que é um processo?
 
 -> Um processo é um programa em execução em um sistema operacional.
-Ele é a unidade básica de alocação de recursos, como memória e tempo de CPU,
-e possui seu próprio espaço de endereçamento de memória. Um processo pode conter um ou vários threads, além de informações sobre o estado atual
-do programa, incluindo registros de CPU e etc.
+-> Ele é a unidade básica de alocação de recursos, como memória e tempo de CPU, e possui seu próprio espaço de endereçamento de memória. Um processo pode conter um ou vários threads, além de informações sobre o estado atual do programa, incluindo registros de CPU e etc.
 
 
 b)Qual a diferença entre processos e threads?
 
 -> A principal diferença está na maneira como compartilham recursos.
--> Cada processo possui seu próprio espaço de endereçamento de memória,
-dessa forma eles não compartilham diretamente variáveis ou dados, sendo
-mais isolados e independentes.
--> Threads compartilham o mesmo espaço de endereçamento de memória do seu
-processo pai, facilitando a comunicação e compartilhamento de dados entre
-threads.
+-> Cada processo possui seu próprio espaço de endereçamento de memória, dessa forma eles não compartilham diretamente variáveis ou dados, sendo mais isolados e independentes.
+-> Threads compartilham o mesmo espaço de endereçamento de memória do seu processo pai, facilitando a comunicação e compartilhamento de dados entre threads.
 
 
 c)Explique detalhadamente o porque que processos não compartilham dados.
 
--> Processos nao compartilham dados devido principalmente ao seu espaço de 
-endereçamento de memoria independente.
--> Essa separação é uma medidade de segurança e isolamento impedindo que um processo
-modifique a memória de outro processo.
+-> Processos nao compartilham dados devido principalmente ao seu espaço de endereçamento de memoria independente.
+-> Essa separação é uma medida de de segurança e isolamento impedindo que um processo modifique a memória de outro processo.
 
 
 d)Como os processos são criados em um sistem baseado em linux?
 
--> Em sistemas Linux, os processos são criados por meio de uma chamada de sistema
-"fork()" ou por funções relacionadas como o "exec()".
--> Dessa forma o processo pai pode criar um novo processo filho usando "fork()",
-que cria uma cópia identica ao processo pai e o processo filho pode, em seguida,
-substituir seu próprio programa usando "exec()", mantendo o mesmo PID mas tera um 
-novo programa em execução.
+-> Em sistemas Linux, os processos são criados por meio de uma chamada de sistema "fork()" ou por funções relacionadas como o "exec()".
+-> Dessa forma o processo pai pode criar um novo processo filho usando "fork()", que cria uma cópia identica ao processo pai e o processo filho pode, em seguida, substituir seu próprio programa usando "exec()", mantendo o mesmo PID mas tera um novo programa em execução.
 
 
 e)Sobre a posix, o que o comando  execv("") faz?
@@ -70,8 +55,7 @@ Quais são as interfaces que garantem a abstração para possibilitar comunicaç
 
 a)Hardware <-> software
 
-A interface que permite esse tipo de comunicação é fornecida por meio de drivers de dispositivo.
-São componentes de software que abstraem os detalhes de hardware e fornecemuma interface padronizada para que o software interaja com o hardware.
+A interface que permite esse tipo de comunicação é fornecida por meio de drivers de dispositivo. São componentes de software que abstraem os detalhes de hardware e fornecemuma interface padronizada para que o software interaja com o hardware.
 
 
 b)Sistemas operacionais <-> bibliotecas
@@ -81,5 +65,4 @@ A comunicação entre sistemas operacionais e bibliotecas é intermediada pela A
 
 c)Sistemas operacionais <-> aplicações
 
-A comunicação entre sistemas operacionais e aplicações é mediada pelo chamado de sistema(system call)
-e pela API do sistema operacional.
+A comunicação entre sistemas operacionais e aplicações é mediada pelo chamado de sistema(system call) e pela API do sistema operacional.
