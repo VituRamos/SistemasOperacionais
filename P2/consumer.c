@@ -35,7 +35,7 @@ void exit(int signum){
 
 void consumer()
 {
-    printf("Producer was born!\n");
+    printf("Consumer was born!\n");
  
     while(1) {    
 
