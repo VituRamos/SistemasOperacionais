@@ -1,0 +1,134 @@
+1) Faça um programa para disparar uma mensagem de bons estudos a cada 10 segundos utilizando a API posix do linux.
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+2) A partir da rotina main descrita a seguir;
+
+
+int main(int argc, char* argv[])
+{
+
+ 
+  while(1)   
+  return 0;
+
+
+}
+
+
+faça:
+
+Um procedimento para contar o número de vezes que o usuário enviou o sinal SIGINT para o processo em execução. Pressionar Ctl-C no teclado envia esse sinal. Quando o processo recebe o sinal SIGTSTP (Ctl-Z), ele deve imprimir no terminal o número de sinais SIGINT que recebeu. Depois de receber 3 sinais SIGINT, o programa deve perguntar se o usuário deseja sair do programa. Se o usuário não responder em 20 segundos, um sinal SIGALRM deve forçar a saída do programa.
+
+Faça o programa de acordo com o exemplo de saída a seguir:
+
+
+bash> ./ex
+    ^C^C^C
+    Realmente deseja sair? [Y/n]: n
+
+    Continuando...
+    ^C^Z
+
+    Você apertou Ctl-C '1' vezes
+
+    ^C^Z
+
+    Você apertou Ctl-C '2' vezes
+
+    ^C
+    Realmente deseja sair? [Y/n]: n
+
+    Continuando...
+    ^C^C^C
+    Realmente deseja sair? [Y/n]:
+    Demorou muito para responder. Saindo......
+
+----------------------------------------------------------------------------------------------
+
+Páginas de referência para posix signals
+
+https://dsa.cs.tsinghua.edu.cn/oj/static/unix_signal.html
+
+http://faculty.kutztown.edu/spiegel/CSc552/POSIX%20Signals.html
+
+https://man7.org/linux/man-pages/man2/signal.2.html
+
+
+
+3) Crie um processo para printar na tela uma lista de processos em execução no sistema.
+
+DICA: usar o programa ps
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+4) Excrever um programa C que cria uma árvore de 3 processos, onde o processo A faz um fork() criando um processo B, o processo B, por sua vez, faz um fork() criando um processo C. Cada processo deve exibir uma mensagem "Eu sou o processo XXX, filho de YYY", onde XXX e YYY são PIDs de processos. Utilizar wait() para garantir que o processo C imprima sua resposta antes do B, e que o processo B imprima sua resposta antes do A. Utilizar sleep() (man 3 sleep) para haver um intervalo de 1 segundo entre cada mensagem impressa.
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+5) O status passado como parâmetro à função wait(&status) é, na verdade, o mecanismo de retorno de resultado do wait/waitpid. Ao retornar, esta variável contém informações sobre o resultado da execução do processo filho. Por exemplo, se um processo terminou normalmente (i.e., chamou exit), o comando WIFEXITED(status) retorna true. Este comando retorna false se o processo foi abortado (e.g., segmentation fault) ou morto (e.g., kill). Investigue no manual do wait no Linux (man wait) o funcionamento do comando WEXITSTATUS(status), e use-o para modificar o exercício anterior para calcular o 5!, sendo que cada processo pode executar apenas uma multiplicação.
+
+*obs: referências em https://man7.org/linux/man-pages/man2/wait.2.html
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+6) Calcule o tempo médio de resposta e o tempo médio  de espera do sistema considerando o algoritmo SJF approximation (considere alpha = 0.75 e que todas tarefas chegaram no tempo = 0).
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+7) Calcule o tempo médio de resposta e o tempo médio  de espera do sistema considerando o Round-Robin  com o quantum = 3.
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+8) A seguinte informação: "processos pai e filho compartilham código, mas não dados"; é verdadeira? Demonstre a sua resposta com um programa - exemplo.
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+9) Explique com suas próprias palavras a frase:
+
+ " A técnica de multiprogramação possibilita aumentar a utilização da CPU."
+
+ A multiprogramação é uma abordagem que permite com que a cpu seja utilizada de forma mais eficiente.
+ Normalmente em um sistema, os programas sao executados um de cada vez na cpu, porem, com a multiprogramação, varios programas podem ser carregados simultaneamente na memoria
+ e compartilham o tempo de cpu disponivel.
+ Dessa forma a multiprogramação permite que a CPU alterne de forma muito rapida entre os processos em execução, dando a impressao que estão sendo executados simultaneamente.
+ Isso aumenta a utilização da cpu, pois diminui o tempo em que a cpu fica ociosa, esperando a conclusao de uma tarefa, permitindo com que continuamente a cpu seja utilizada
+ para executar diversos processos.
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+10) Sobre processos, explique:
+
+    a) o que é um processo?
+    Processo é um programa em execução em um sistema operacional.
+    Ele é a unidade basica de alocação de recursos como memoria e tempo de cpu e possui seu proprio endereçamento de memoria.
+
+    b) qual a diferença entre processos e threads?
+    A principal diferença esta em como eles compartilham recursos.
+    Em razao dos processos possuirem seu proprio endereçamento de memoria, eles nao compartilham diretamente variaveis ou dados, sendo mais isolados e independentes.
+    Ja as threads compartilham o mesmo endereçamento que seu processo pai, facilitando a comunicação de dados entre threads.
+
+    c) explique detalhadamente o porque que processos não compartilham dados.
+    Processos nao compartilham dados principalmente por conta do seu espaço de endereçamento de memoria independente.
+    Essa separação é uma medida de segurança e isolamento, impedindo que um processo modifique a memoria de outro processo.
+
+    d) como os processos são criados em um sistema baseado em linux?
+    Em sistemas baseados em linux um processo pode ser criado pela chamada de sistema "fork()" ou funções relacionadas como o "exec()"
+    Dessa forma o processo pai pode criar um novo processo utilizando do "fork()", gerando uma copia identica ao processo pai e o processo filho pode substituir seu programa
+    utilizando do comando "exec()", mantendo seu PID mas alterando o programa em execução.
+
+    e) Sobre a posix, o que o comando execv("") faz?
+    O comando "execv()" é usado para substituir o programa atual de um processo pelo programa especificado em um novo arquivo executável.
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+11) Quais são as interfaces que garantem a abstração para possibilitar comunicação entre as seguintes camadas?
+
+    a) hardware <-> software
+    Drivers de dispositivos.
+
+    b) sistemas operacionais <-> bibliotecas
+    API do sistema operacional.
+
+    c) Sistemas operacionais <-> aplicações
+    System call e API dos sistema operacional.
